@@ -3,9 +3,9 @@ import { getDatabase } from 'firebase/database';
 
 
 const firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_DOMAIN_ID,
+    apiKey: "AIzaSyAkccV56LyZAaMk3MCra3K9WdcPl8RlxPc",
+    authDomain: "https://utakio-43429-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "utakio-43429",
     storageBucket: "utakio-43429.appspot.com",
     messagingSenderId: "1048648585250",
     appId: "1:1048648585250:web:c3a9e447050aa9a6b1ba7b",

@@ -1,28 +1,21 @@
 import React from "react";
 import styles from "./index.module.css";
 
-const Product = () => {
+
+const Product = ({value}) => {
     return(
-        <div className={`${styles.container} space-y-4 text-center rounded-lg shadow-xl justify-items-center`}>
-            {/* <img className={`${styles.productImage}`} src={require("./images/borger.jpg")}/> */}
-            <h1 className={`font-bold text-lg uppercase`}>ultimate burger</h1>
-            <p className={`font-bold text-3xl uppercase`}>p240</p>
-            <div className={`flex flex-col`}>
-            <label>Sizes</label>
-                <label>
-                    Small
-                    <input type="radio" name="size"/>
-                </label>
-                <label>
-                    Medium
-                    <input type="radio" name="size"/>
-                </label>
-                <label>
-                    Large
-                    <input type="radio" name="size"/>
-                </label>
+        <div className={`${styles.container} space-y-4 text-center rounded-lg shadow-xl justify-items-center cursor-pointer`}>
+            <h1 className={`font-bold text-2xl uppercase`}>{value.name}</h1>
+            <div>
+            {
+                Object.values(value.sizes).map((size, index) =>{
+                    return(
+                        <p key={index} className={`uppercase`}>{size.size} - P{size.price}</p>
+                    )
+                })
+            }
             </div>
-            <p>Stock: 56</p>
+            <p>Stock: {value.stock}</p>
         </div>
     )
 }

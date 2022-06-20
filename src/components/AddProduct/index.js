@@ -4,34 +4,27 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { db } from "../../firebase";
 import { uid } from "uid";
 import { ref, set } from "firebase/database";
-import InputField from "../UI/InputField";
 
-const Push = () => {
+const Push = ({values, sizes}) => {
     const uuid = uid();
-    set(ref(db, `/${uuid}`), {
-        username: "test",
-        email: "test",
-        profile_picture : "imageUrl"
+    set(ref(db, `/product/${uuid}`), {
+        category: values.category,
+        name: values.name,
+        sizes: sizes,
+        stock: values.stock
     });
 }
 
 const AddProduct = () => {
-    const [smallchecked, smallSetChecked] = useState(false);
-    const [mediumchecked, mediumSetChecked] = useState(false);
-    const [largechecked, largeSetChecked] = useState(false);
-
-    const [category, setCategory] = useState("");
-    const [name, setName] = useState("");
+    const [size, setSize] = useState("")
+    const [price, setPrice] = useState("")
     const [sizes, setSizes] = useState([]);
-    const [price, setPrice] = useState(0);
-    const [stock, setStock] = useState(0);
-
 
     return(
-        <div className={`${styles.container}`}>
+        <div className={`${styles.container} border`}>
             <h1>Add Your Product Here!</h1>
             <Formik
-            initialValues={{ category: '', name: '', size: '', price: '', cost: '', stock: ''}}
+            initialValues={{ category: '', name: '', stock: ""}}
             validate={values => {
                 const errors = {};
                 if (!values.category) {
@@ -40,120 +33,75 @@ const AddProduct = () => {
                 if (!values.name) {
                     errors.name = 'Required';
                 }
-                if (!values.size) {
-                    errors.size = 'Required';
-                }
-                if (!values.price) {
-                    errors.price = 'Required';
-                }
-                if (values.price < 1){
-                    errors.price = "Price can't be zero!";
-                }
-                if (!values.stock) {
-                    errors.stock = 'Required';
+                if (values.stock < 1) {
+                    errors.stock = "Stock can't be zero!";
                 }
 
                 return errors;
             }}
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={(values, { setSubmitting, resetForm }) => {
                 console.log(values)
-                Push()
+                Push({values, sizes});
                 setTimeout(() => {
                 alert(JSON.stringify(values, null, 2));
                 setSubmitting(false);
                 }, 400);
+                resetForm({values:""});
+                setSizes([])
             }}
             >
             {({ isSubmitting }) => (
-                <Form>
-                <label>
-                    Category
-                    <InputField type={"text"} name={"category"}/>
+                <Form className={`${styles.formContainer} space-y-4`}>
+                <label className="font-bold">Category</label>
+                <div>
+                    <Field className={`w-full border`} type="text" name="category"/>
                     <ErrorMessage name="category" component="div" />
-                </label>
-                <label>
-                    Name
-                    <InputField type={"text"} name={"name"}/>
+                </div>
+                <div>
+                    <label className="font-bold">Name</label>
+                    <Field className={`w-full border`} type="text" name="name"/>
                     <ErrorMessage name="name" component="div" />
-                    </label>
-                <label>
-                    Size
-                    <div className={`flex flex-col`}>
-                    <label>
-                            None&nbsp;
-                             <input type="checkbox" id="none" onChange={()=>{
-                                setSizes([])
-                                document.getElementById("small").checked = false;
-                                document.getElementById("medium").checked = false;
-                                document.getElementById("large").checked = false;
-                                smallSetChecked(false);
-                                mediumSetChecked(false);
-                                largeSetChecked(false)
-                             }}/>
-                        </label>
-                        <label>
-                            Small&nbsp;
-                             <input type="checkbox" id="small" onChange={()=>{
-                                 document.getElementById("none").checked = false;
-                                 smallSetChecked(!smallchecked)
-                                 if(smallchecked === false) {
-                                 setSizes([...sizes, 1])
-                                 }
-                                 else{
-                                    const filterSizes = sizes.filter(size => {
-                                        return size !== 1
-                                    })
-                                    setSizes(filterSizes)
-                                 }
-                             }}/>
-                        </label>
-                        {sizes}
-                        <label>
-                            Medium&nbsp;
-                             <input type="checkbox" id="medium" onChange={()=>{
-                                 document.getElementById("none").checked = false;
-                                 mediumSetChecked(!mediumchecked)
-                                 if(mediumchecked === false) {
-                                 setSizes([...sizes, 2])
-                                 }
-                                 else{
-                                    const filterSizes = sizes.filter(size => {
-                                        return size !== 2
-                                    })
-                                    setSizes(filterSizes)
-                                 }
-                             }}/>
-                        </label>
-                        <label>
-                            Large&nbsp;
-                             <input type="checkbox" id="large" onChange={()=>{
-                                document.getElementById("none").checked = false;
-                                largeSetChecked(!largechecked)
-                                if(largechecked === false) {
-                                setSizes([...sizes, 3])
-                                }
-                                else{
-                                   const filterSizes = sizes.filter(size => {
-                                       return size !== 3
-                                   })
-                                   setSizes(filterSizes)
-                                }
-                             }}/>
-                        </label>
+                </div>
+                <div className={`${styles.size} space-y-4 flex flex-col border p-4`}>
+                    <div>
+                        <label className="font-bold">Size</label>
+                        <input className={`w-full border`} type="text" name="size" value={size} onChange={(e)=>{
+                                setSize(e.target.value)
+                            }
+                        }/>
                     </div>
-                    <ErrorMessage name="size" component="div" />
-                </label>
-                <label>
-                    Price
-                    <InputField type={"number"} name={"price"}/>
-                    <ErrorMessage name="price" component="div" />
-                </label>
-                <label>
-                    Stock
-                    <InputField type={"number"} name={"stock"}/>
+                    <div>
+                    <label className="font-bold">Price</label>
+                        <input className={`w-full border`} type="number" name="price" value={price} onChange={(e)=>{
+                                setPrice(e.target.value)
+                            }
+                        }/>
+                    </div>  
+                    <div className={`rounded-lg border p-1 text-center`} onClick={()=>{
+                        if(size!== "" || price !== "")
+                            setSizes([...sizes, {size: size, price: price}])
+                            setPrice("");
+                            setSize("");
+                        }}>
+                        Add Size
+                    </div>
+                    {
+                    sizes.map((value)=>{
+                        return(
+                            <div key={value.size} className={`flex flex-col`}>
+                                <p className={`capitalize`}>{value.size} - P{value.price}</p>
+                            </div>
+                        )
+                    })
+                    }
+                </div>
+                <div>
+                    <label className="font-bold">Stock</label>
+                    <Field className={`w-full border`} type="number" name="stock"/>
                     <ErrorMessage name="stock" component="div" />
-                </label>
-                <button type="submit" disabled={isSubmitting}>
+                </div>
+
+                <button className={`rounded-lg border p-1 text-center`} type="submit" disabled={isSubmitting}>
                     Submit
                 </button>
                 </Form>
